@@ -8,6 +8,69 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
+        /* --- HIỆU ỨNG CUỘN MƯỢT --- */
+        html { scroll-behavior: smooth; }
+
+        /* --- THANH ĐIỀU HƯỚNG BÊN PHẢI --- */
+        .side-nav {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 9999;
+        }
+
+        .side-nav a {
+            width: 45px;
+            height: 45px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #b30000;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 2px solid #b30000;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            position: relative;
+        }
+
+        .side-nav a:hover {
+            background-color: #b30000;
+            color: #FFD700;
+            transform: scale(1.1);
+        }
+
+        /* Hiệu ứng Tooltip (Hiện chữ khi di chuột vào) */
+        .side-nav a::after {
+            content: attr(title);
+            position: absolute;
+            right: 60px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+            pointer-events: none;
+            font-family: 'Playfair Display', serif;
+        }
+        .side-nav a:hover::after { opacity: 1; visibility: visible; }
+
+        /* Thu nhỏ trên màn hình điện thoại */
+        @media (max-width: 768px) {
+            .side-nav { right: 10px; gap: 10px; }
+            .side-nav a { width: 35px; height: 35px; font-size: 1rem; }
+            .side-nav a::after { display: none; /* Ẩn chữ trên điện thoại cho đỡ vướng */ }
+        }
         /* --- CẤU HÌNH CHUNG --- */
         body { margin: 0; padding: 0; font-family: 'Playfair Display', serif; background-color: #fafafa; overflow-x: hidden; }
         * { box-sizing: border-box; }
@@ -98,10 +161,68 @@
 
         /* --- ALBUM --- */
         .album-section { padding: 80px 20px; background: #fff; text-align: center; }
-        .album-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; max-width: 1200px; margin: 0 auto; }
-        .album-item { height: 350px; overflow: hidden; border-radius: 10px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        
+        /* --- CSS CHO PHẦN TRANG TRÍ ALBUM TRÊN MÁY TÍNH (ĐÃ SỬA RỒNG PHƯỢNG) --- */
+        .album-content-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            gap: 30px; 
+            max-width: 1600px; 
+            margin: 0 auto;
+        }
+
+        .album-deco {
+            flex: 1; 
+            max-width: 300px; 
+            height: 600px; 
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center center;
+            opacity: 0.9; 
+        }
+
+        /* Họa tiết bên TRÁI: PHƯỢNG */
+        .album-deco-left {
+            background-image: url('phuong.png'); 
+        }
+
+        /* Họa tiết bên PHẢI: RỒNG */
+        .album-deco-right {
+            background-image: url('rong.png');
+        }
+
+        .album-grid {
+            flex: 3; 
+            max-width: 900px; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Bóng đổ cho khung album */
+            padding: 20px;
+            background: #fff;
+            border-radius: 15px;
+        }
+
+        .album-item { height: 350px; overflow: hidden; border-radius: 10px; cursor: pointer; }
         .album-item img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: 0.5s; }
         .album-item:hover img { transform: scale(1.1); }
+
+        /* ẨN TRANG TRÍ TRÊN ĐIỆN THOẠI & TABLET */
+        @media (max-width: 1200px) {
+            .album-deco {
+                display: none; 
+            }
+            .album-content-wrapper {
+                display: block; 
+            }
+            .album-grid {
+                max-width: 100%; 
+                margin: 0 auto;
+                box-shadow: none;
+                padding: 0;
+            }
+        }
 
         /* --- RSVP & GUESTBOOK --- */
         .guestbook-section { padding: 80px 20px; background-color: #8B0000; text-align: center; color: #fff; }
@@ -111,12 +232,59 @@
         .guestbook-form button { background-color: #FFD700; color: #8B0000; border: none; padding: 15px 40px; font-weight: bold; border-radius: 30px; cursor: pointer; width: 100%; font-size: 1.1rem; transition: 0.3s; }
         .guestbook-form button:hover { background-color: #fff; transform: scale(1.05); }
         
-        /* --- GIFT BOX --- */
-        .gift-section { padding: 80px 20px; background-color: #fffdf5; text-align: center; }
-        .gift-box { cursor: pointer; display: inline-block; animation: shake 2s infinite; }
-        @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
-        .red-envelope { background: #b30000; color: #FFD700; width: 200px; height: 280px; border-radius: 15px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 2px solid #FFD700; box-shadow: 0 10px 30px rgba(179,0,0,0.4); position: relative; }
-        .coin-icon { position: absolute; font-size: 1.5rem; }
+ /* --- GIFT BOX (HIỆU ỨNG VUI NHỘN) --- */
+        .gift-section { 
+            padding: 80px 20px; 
+            background-color: transparent; 
+            text-align: center; 
+        }
+        
+        .gift-box { position: relative; cursor: pointer; display: inline-block; transition: 0.3s; margin-top: 30px; }
+        .gift-box:hover { transform: scale(1.05); }
+
+        .red-envelope {
+            background: linear-gradient(135deg, #cc0000, #990000);
+            width: 200px; height: 260px; border-radius: 10px 10px 15px 15px;
+            display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+            border: 2px solid #FFD700; box-shadow: 0 10px 30px rgba(179,0,0,0.4);
+            position: relative; padding-bottom: 30px;
+        }
+
+        /* Nắp lì xì tam giác */
+        .red-envelope::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 120px;
+            background: linear-gradient(135deg, #e60000, #cc0000);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            border-bottom: 2px solid rgba(255, 215, 0, 0.5);
+            z-index: 3; transition: transform 0.5s ease-in-out; transform-origin: top;
+        }
+
+        /* Khi rê chuột/chạm vào: bật mở nắp lì xì */
+        .gift-box:hover .red-envelope::before { transform: rotateX(160deg); }
+
+        /* Nút dán chữ Hỷ */
+        .envelope-seal {
+            position: absolute; top: 90px; left: 50%; transform: translateX(-50%);
+            width: 55px; height: 55px; background: #FFD700; border-radius: 50%;
+            z-index: 4; display: flex; justify-content: center; align-items: center;
+            color: #b30000; font-family: 'Dancing Script', cursive; font-size: 1.8rem; font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); border: 2px solid #b30000;
+            transition: 0.3s;
+        }
+        .gift-box:hover .envelope-seal { opacity: 0; top: 50px; }
+
+        /* Nội dung hộp quà bên trong đẩy lên */
+        .gift-content {
+            position: relative; z-index: 2; transition: 0.5s ease-in-out; transform: translateY(10px);
+        }
+        .gift-box:hover .gift-content { transform: translateY(-30px); }
+
+        /* Đồng tiền & pháo giấy bay tung tóe */
+        .fun-item { position: absolute; top: 50%; left: 50%; font-size: 1.5rem; opacity: 0; transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1; }
+        .gift-box:hover .fun-item:nth-child(1) { opacity: 1; transform: translate(-100px, -150px) rotate(45deg); font-size: 2rem; }
+        .gift-box:hover .fun-item:nth-child(2) { opacity: 1; transform: translate(80px, -180px) rotate(-30deg); font-size: 1.8rem; }
+        .gift-box:hover .fun-item:nth-child(3) { opacity: 1; transform: translate(-60px, -220px) rotate(60deg); font-size: 1.5rem; }
+        .gift-box:hover .fun-item:nth-child(4) { opacity: 1; transform: translate(90px, -100px) rotate(-45deg); font-size: 2.2rem; }
 
         /* --- NHẠC NỀN --- */
         .music-box { position: fixed; bottom: 30px; left: 30px; width: 50px; height: 50px; background: #fff; border: 2px solid #b30000; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
@@ -138,7 +306,7 @@
 </head>
 <body>
 
-    <section class="hero-section">
+    <section class="hero-section" id="hero">
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <p class="hero-quote">We are getting married</p>
@@ -151,19 +319,21 @@
         </div>
     </section>
 
-    <section class="event-section reveal">
+    <section class="event-section reveal" id="event">
         <div class="bg-container"><div class="bg-half bg-left"></div><div class="bg-half bg-right"></div></div>
         
         <div class="event-content-card">
             <h2 class="main-title">Thông Tin Lễ Cưới</h2>
             <div class="parents-container">
-                <div class="parents-block"><p class="parents-label">Ông Bà</p><p class="parents-names">Nguyễn Quốc Quý<br>Vũ Thị Chinh</p><p class="parents-address">38 ngõ 38 Đoài Nội, Hồng Sơn, Hà Nội</p></div>
+                <div class="parents-block"><p class="parents-label">Bố mẹ cô dâu</p><p class="parents-names">Nguyễn Quốc Quý<br>Vũ Thị Chinh</p><p class="parents-address">38 ngõ 38 Đoài Nội, Hồng Sơn, Hà Nội</p></div>
                 <div class="divider"></div>
-                <div class="parents-block"><p class="parents-label">Ông Bà</p><p class="parents-names">Bùi Mạnh Cường<br>Nguyễn Thị Nhật</p><p class="parents-address">C12-P9, phường Trường Thi, tỉnh Nam Định</p></div>
+                <div class="parents-block"><p class="parents-label">Bố mẹ chú rể</p><p class="parents-names">Bùi Mạnh Cường<br>Nguyễn Thị Nhật</p><p class="parents-address">C12-P9 Văn Miếu, phường Trường Thi, tỉnh Nam Định</p></div>
             </div>
-            <p class="sub-title">Trân trọng kính mời quý khách đến dự bữa cơm thân mật</p>
+            <p class="sub-title">Trân trọng kính mời quý khách</p>
             
-            <div class="event-container">
+  <div class="event-container">
+                
+
                 <div class="event-card">
                     <h3 class="event-name">Lễ Vu Quy (Nhà Gái)</h3>
                     <div class="event-icon">🌸</div>
@@ -171,6 +341,7 @@
                     <p>Tại: Tư gia số 38 ngõ 38 Đoài Nội, Hồng Sơn, Mỹ Đức, Hà Nội</p>
                     <a href="https://maps.app.goo.gl/dCMoQCUKGbBtP86Y7" target="_blank" class="map-btn">Xem bản đồ</a>
                 </div>
+                
                 <div class="event-card">
                     <h3 class="event-name">Lễ Thành Hôn (Nhà Trai)</h3>
                     <div class="event-icon">💍</div>
@@ -178,6 +349,18 @@
                     <p>Tại: Nhà hàng bia NaDa, 586 Giải Phóng, Trường Thi, Nam Định</p>
                     <a href="https://maps.app.goo.gl/toFBx29Ma547h5vN9" target="_blank" class="map-btn">Xem bản đồ</a>
                 </div>
+                <div class="event-card">
+                    <h3 class="event-name">Bữa Cơm Thân Mật Nhà Gái</h3>
+                    <div class="event-icon">🥂</div>
+                    <p class="event-time">14:00 | 03 Tháng 03, 2026</p>
+                    <p>Tại: Tư gia nhà gái số 38 ngõ 38 Đoài Nội</p>
+                    </div>
+                     <div class="event-card">
+                    <h3 class="event-name">Bữa Cơm Thân Mật Nhà Trai</h3>
+                    <div class="event-icon">🥂</div>
+                    <p class="event-time">17:00 | 03 Tháng 03, 2026</p>
+                    <p>Tại: Tư gia nhà trai số C12P9 Văn Miếu</p>
+                    </div>
             </div>
 
             <div class="time-calendar-wrapper">
@@ -204,16 +387,25 @@
         </div>
     </section>
 
-    <section class="album-section reveal">
+    <section class="album-section reveal" id="album">
         <h2 class="main-title">Album Hình Cưới</h2>
         <p class="sub-title">Những khoảnh khắc hạnh phúc nhất của chúng mình</p>
-        <div class="album-grid">
-            <div class="album-item"><img src="1.jpg" class="zoomable"></div>
-            <div class="album-item"><img src="2.jpg" class="zoomable"></div>
-            <div class="album-item"><img src="3.jpg" class="zoomable"></div>
-            <div class="album-item"><img src="4.jpg" class="zoomable"></div>
-            <div class="album-item"><img src="5.jpg" class="zoomable"></div>
-            <div class="album-item"><img src="6.jpg" class="zoomable"></div>
+        
+        <div class="album-content-wrapper">
+            
+            <div class="album-deco album-deco-left"></div>
+            
+            <div class="album-grid">
+                <div class="album-item"><img src="1.jpg" class="zoomable"></div>
+                <div class="album-item"><img src="2.jpg" class="zoomable"></div>
+                <div class="album-item"><img src="3.jpg" class="zoomable"></div>
+                <div class="album-item"><img src="4.jpg" class="zoomable"></div>
+                <div class="album-item"><img src="5.jpg" class="zoomable"></div>
+                <div class="album-item"><img src="6.jpg" class="zoomable"></div>
+            </div>
+            
+            <div class="album-deco album-deco-right"></div>
+            
         </div>
     </section>
 
@@ -242,14 +434,22 @@
         </div>
     </section>
 
-    <section class="gift-section reveal">
+<section class="gift-section reveal" id="gift">
         <h2 class="main-title">Hộp Mừng Cưới</h2>
         <p class="sub-title">Sự hiện diện của quý khách là niềm vinh hạnh của gia đình chúng tôi</p>
+        
         <div class="gift-box" onclick="document.getElementById('qr-modal').style.display='flex'">
+            <div class="fun-item">💰</div>
+            <div class="fun-item">✨</div>
+            <div class="fun-item">🎊</div>
+            <div class="fun-item">🟡</div>
+
             <div class="red-envelope">
-                <i class="fa-solid fa-envelope-open-text" style="font-size:3rem; margin-bottom:15px;"></i>
-                <p>Nhấn để mở<br>Hộp Mừng Cưới</p>
-                <div class="coin-icon" style="top:10px; left:10px;">🟡</div><div class="coin-icon" style="bottom:10px; right:10px;">🟡</div>
+                <div class="envelope-seal">Hỷ</div>
+                <div class="gift-content">
+                    <i class="fa-solid fa-gift" style="font-size:3.5rem; margin-bottom:10px; color:#FFD700;"></i>
+                    <p style="color:#FFD700; font-weight:bold; margin:0; line-height: 1.4;">Nhấn để mở<br>Hộp Mừng Cưới</p>
+                </div>
             </div>
         </div>
     </section>
@@ -417,5 +617,12 @@
             }
         });
     </script>
+    <div class="side-nav">
+        <a href="#hero" title="Đầu Trang"><i class="fa-solid fa-house"></i></a>
+        <a href="#event" title="Thông Tin"><i class="fa-solid fa-calendar-days"></i></a>
+        <a href="#album" title="Album Cưới"><i class="fa-solid fa-images"></i></a>
+        <a href="#rsvp" title="Gửi Lời Chúc"><i class="fa-solid fa-envelope-open-text"></i></a>
+        <a href="#gift" title="Mừng Cưới"><i class="fa-solid fa-gift"></i></a>
+    </div>
 </body>
 </html>
