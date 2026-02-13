@@ -287,7 +287,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. ĐỒNG HỒ
+            // --- 1. ĐỒNG HỒ ---
             const weddingDate = new Date("2026-03-04T00:00:00").getTime();
             setInterval(() => {
                 const now = new Date().getTime();
@@ -300,7 +300,7 @@
                 }
             }, 1000);
 
-            // 2. LIGHTBOX
+            // --- 2. LIGHTBOX ---
             document.querySelectorAll('.zoomable').forEach(img => {
                 img.onclick = () => {
                     document.getElementById('lightbox').style.display = 'flex';
@@ -308,7 +308,7 @@
                 }
             });
 
-            // 3. RSVP
+            // --- 3. RSVP (CÁCH GỬI MỚI ỔN ĐỊNH HƠN) ---
             const scriptURL = 'https://script.google.com/macros/s/AKfycbyiKHtXXyAvsOFWrFGuNYQdjXBpoON3U5tNDBj-2q847cBJ76sqVVq-Ko5c8knNi00/exec';
             const form = document.getElementById('rsvp-form');
             const msg = document.getElementById('form-message');
@@ -320,31 +320,41 @@
                 const name = document.getElementById('guest-name').value;
                 const wish = document.getElementById('guest-msg').value;
 
+                // Kiểm tra tên chưa nhập
+                if(!name) { alert("Bạn quên nhập tên rồi!"); return; }
+
                 btn.innerText = "Đang gửi...";
                 btn.disabled = true;
 
-                fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-                .then(() => {
+                // SỬ DỤNG URLSearchParams ĐỂ GỬI DỮ LIỆU ỔN ĐỊNH HƠN
+                const data = new URLSearchParams(new FormData(form));
+
+                fetch(scriptURL, { method: 'POST', body: data })
+                .then(response => {
                     msg.innerHTML = "Cảm ơn " + name + " đã gửi lời chúc! ❤️";
                     msg.style.display = 'block';
+                    
                     if(wish) {
                         var newWish = "<p style='color:#fff; border-bottom:1px dashed #FFD700; padding:10px;'><strong>" + name + ":</strong> " + wish + "</p>";
                         if(list.innerHTML.includes("Chưa có lời chúc")) list.innerHTML = "";
                         list.innerHTML = newWish + list.innerHTML;
                     }
+                    
                     form.reset();
                     btn.innerText = "Gửi Lời Chúc & Xác Nhận";
                     btn.disabled = false;
                 })
                 .catch(error => {
-                    msg.innerHTML = "Lỗi kết nối! Bạn kiểm tra lại wifi xem sao nhé.";
+                    // Hiện lỗi chi tiết để dễ sửa
+                    msg.innerHTML = "Lỗi đường truyền hoặc Script chưa cập nhật Version mới!";
+                    console.error('Lỗi chi tiết:', error);
                     msg.style.display = 'block';
-                    btn.innerText = "Gửi Lời Chúc & Xác Nhận";
+                    btn.innerText = "Gửi Lại";
                     btn.disabled = false;
                 });
             });
 
-            // 4. HIỆU ỨNG TIM RƠI
+            // --- 4. CÁC HIỆU ỨNG KHÁC (TIM RƠI, CUỘN, NHẠC) ---
             function createHeart() {
                 const heart = document.createElement("div");
                 heart.innerHTML = "❤";
@@ -357,7 +367,6 @@
             }
             setInterval(createHeart, 300);
 
-            // 5. HIỆU ỨNG CUỘN (SCROLL REVEAL)
             function reveal() {
                 var reveals = document.querySelectorAll(".reveal");
                 for (var i = 0; i < reveals.length; i++) {
@@ -372,39 +381,28 @@
             window.addEventListener("scroll", reveal);
             reveal();
 
-            // 6. NHẠC NỀN THÔNG MINH (Chạm hoặc Cuộn đều phát)
+            // NHẠC NỀN
             var music = document.getElementById("wedding-music");
             var btn = document.getElementById("music-btn");
-            var hasStarted = false; // Biến kiểm tra nhạc đã bắt đầu chưa
+            var hasStarted = false;
 
-            // Hàm thử phát nhạc
             function tryPlayMusic() {
-                // Nếu chưa từng phát nhạc thì mới thử phát
                 if (!hasStarted) {
                     music.play().then(() => {
-                        // Nếu phát thành công
                         hasStarted = true;
                         btn.classList.add("music-playing");
                         btn.innerHTML = '<i class="fa-solid fa-music"></i>';
-                        
-                        // Xóa các sự kiện lắng nghe để không làm phiền trình duyệt nữa
                         document.removeEventListener('click', tryPlayMusic);
                         document.removeEventListener('scroll', tryPlayMusic);
                         window.removeEventListener('scroll', tryPlayMusic);
                         document.removeEventListener('touchstart', tryPlayMusic);
-                    }).catch(error => {
-                        // Nếu trình duyệt chặn thì thôi, đợi lần tương tác sau
-                        console.log("Chờ tương tác để phát nhạc...");
-                    });
+                    }).catch(error => { console.log("Chờ tương tác..."); });
                 }
             }
-
-            // Lắng nghe mọi hành động của người dùng
             document.body.addEventListener('click', tryPlayMusic);
-            window.addEventListener('scroll', tryPlayMusic); // Lăn chuột
-            document.body.addEventListener('touchstart', tryPlayMusic); // Chạm màn hình
+            window.addEventListener('scroll', tryPlayMusic);
+            document.body.addEventListener('touchstart', tryPlayMusic);
 
-            // Nút bấm thủ công
             btn.onclick = function() {
                 if (music.paused) {
                     music.play();
